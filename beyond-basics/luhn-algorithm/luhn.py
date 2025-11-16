@@ -1,22 +1,14 @@
 # Sample value from Wikipedia: 1789372997 (payload only)
 
 def verify(digits):
-    output = []
-    multiplier = 1
-    for digit in reversed(digits):
-        multiplier = 1 if multiplier == 2 else 2
-        multiplied = int(digit) * multiplier
-        if multiplied > 9:
-            multiplied_string = str(multiplied)
-            output.append(int(int(multiplied_string[0]) + int(multiplied_string[1])))
-                
-        else:
-            output.append(multiplied)
+    sum = 0
+    for index, digit in enumerate(digits[-2::-1]):
+        multiplied = int(digit) * (2 - index % 2)
+        sum += multiplied // 10 + multiplied % 10
 
-    combined = sum(output)
-    result = (10 - (combined % 10))
-    print(result)
-
+    result = (10 - (sum % 10))
+    return result == int(digits[-1])
 
 if __name__ == '__main__':
-    verify("1789372997")
+    assert verify("17893729974")
+    assert not verify("17893729975")
