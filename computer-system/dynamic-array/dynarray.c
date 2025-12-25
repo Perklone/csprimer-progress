@@ -70,6 +70,7 @@ int main() {
     int x = 5;
     float y = 12.4;
     DA_push(da, &x);
+    printf("%d\n", *(int*)&x);
     DA_push(da, &y);
     assert(DA_size(da) == 2);
 
@@ -84,6 +85,9 @@ int main() {
     DA_push(da, &x);
     DA_set(da, &y, 0);
     assert(DA_get(da, 0) == &y);
+    // Fetched from Array of void* -> Cast it to a float pointer
+    // type is now float* -> dereference it to get the value of y.
+    printf("%f\n", *(float*)&y);
     DA_pop(da);
     assert(DA_size(da) == 0);
 
