@@ -14,6 +14,7 @@ typedef struct DA {
 DA* DA_new (void) {
   DA* da = malloc(sizeof(DA));
   da->items = malloc(STARTING_CAPACITY * sizeof(void*));
+  da-> capacity = STARTING_CAPACITY;
 
   return da;
 }
@@ -30,6 +31,12 @@ int DA_size(DA *da) {
 }
 
 void DA_push (DA* da, void* x) {
+  if(da->length == da->capacity) {
+    da->capacity <<= 1;
+    da->items = realloc(da->items, da->capacity * sizeof(void *));
+    printf("Resized to %d\n",da->capacity);
+  }
+
   da->items[da->length++] = x;
   return;
 }
@@ -45,10 +52,13 @@ void *DA_pop(DA *da) {
 
 void DA_set(DA *da, void *x, int i) {
   // TODO set at a given index, if possible
+  if(i < 0 || i > (da->length - 1)) return;
+  da->items[i] = x;
 }
 
 void *DA_get(DA *da, int i) {
   // TODO get from a given index, if possible
+  return da->items[i];
 }
 
 int main() {
