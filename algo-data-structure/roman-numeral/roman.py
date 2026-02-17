@@ -15,11 +15,17 @@ values = [
 ]
 
 def roman_numeral(n):
-    for val, symbol in values:
-        if n == 0:
-            return ""
-        if n >= val:
-            return symbol + roman_numeral(n-val)
+    val = ""
+    while n != 0:
+        for v,k in values:
+            if n >= v:
+                n-=v
+                val+=k
+                break
+    return val
+
+            
+        
 
 if __name__ == '__main__':
     print(roman_numeral(39))
