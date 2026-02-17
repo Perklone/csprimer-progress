@@ -1,18 +1,14 @@
 def two_step_staircase(n):
-    if n == 0:
-        return 1
-    elif n == 1:
-        return 1
-    else: return two_step_staircase(n - 2) + two_step_staircase(n-1)
+    a, b = 1, 1
+    for _ in range(n):
+        a, b = b , a+b
+    return a
 
 def three_step_staircase(n):
-    if n == 0:
-        return 1
-    elif n == 1:
-        return 1
-    elif n == 2:
-        return 2
-    else: return three_step_staircase(n-1) + three_step_staircase(n-2) + three_step_staircase (n-3)
+    a, b, c = 1 , 1 , 2
+    for _ in range(n):
+        a, b, c = b, c, a+b+c
+    return a
     
 
 if __name__ == '__main__':
