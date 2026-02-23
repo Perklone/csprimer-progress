@@ -14,6 +14,13 @@ values = [
     (1, "I"),
 ]
 
+def roman_numeral_recursive(n):
+    if n == 0:
+        return ""
+    for val, sym in values:
+        if n >= val:
+            return sym + roman_numeral_recursive(n-val)
+
 def roman_numeral(n):
     val = ""
     while n != 0:
@@ -29,7 +36,12 @@ def roman_numeral(n):
 
 if __name__ == '__main__':
     print(roman_numeral(39))
+    print(roman_numeral_recursive(39))
     print(roman_numeral(246))
+    print(roman_numeral_recursive(246))
     print(roman_numeral(789))
+    print(roman_numeral_recursive(789))
     print(roman_numeral(2421))
+    print(roman_numeral_recursive(2421))
     print(roman_numeral(2026))
+    print(roman_numeral_recursive(2026))
