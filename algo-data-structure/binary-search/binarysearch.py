@@ -1,4 +1,4 @@
-def my_binary_search(arr, val):
+def inclusive_exclusive_binary_search(arr, val):
     low = 0
     hi = len(arr)
 
@@ -11,6 +11,20 @@ def my_binary_search(arr, val):
             return index
         elif arr[index] > val:
             hi = index
+        elif arr[index] < val:
+            low = index + 1
+    return None
+
+def inclusive_inclusive_binary_search(arr, val):
+    low = 0
+    hi = len(arr) - 1
+
+    while(low <= hi):
+        index = int((low + hi) / 2)
+        if arr[index] == val:
+            return index
+        elif arr[index] > val:
+            hi = index - 1
         elif arr[index] < val:
             low = index + 1
     return None
@@ -35,5 +49,6 @@ if __name__ == '__main__':
     (b, -3, None),
 )
     for nums, n, exp in cases:
-        assert my_binary_search(nums, n) == exp, f"When we search for {n}: {my_binary_search(nums, n)} is not the same as {exp}"
+        assert inclusive_exclusive_binary_search(nums, n) == exp, f"[low,hi) When we search for {n}: {inclusive_exclusive_binary_search(nums, n)} is not the same as {exp}"
+        assert inclusive_inclusive_binary_search(nums, n) == exp, f"[low,hi] When we search for {n}: {inclusive_inclusive_binary_search(nums, n)} is not the same as {exp}"
     print("IS OK")
