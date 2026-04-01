@@ -21,14 +21,15 @@ class MemoryScan(object):
         return x
     
 class FileScan(object):
-    def __init__(self, path):
+    def __init__(self, path, schema):
         self.file = open(path, 'r')
         self.reader = csv.reader(self.file)
+        self.schema = schema
         next(self.reader)
     
     def next(self):
         try:
-            return next(self.reader)
+            return tuple(t(v) for t, v in zip(self.schema, next(self.reader)))
         except StopIteration:
             self.file.close()
             return None
@@ -136,9 +137,12 @@ if __name__ == '__main__':
     dir = os.path.dirname(__file__)
     path = os.path.join(dir, 'movies.csv')
 
+    test_schema = (int, str, str)
     test_movies = Q(
-            Limit(10),
-            Projection(lambda x: (x[0], x[1])),
-            FileScan(path)
+            # Limit(10),
+            Projection(lambda x: (x[1])),
+            Selection(lambda x: x[0] == 5000),
+            FileScan(path, test_schema)
         )
-    print(tuple(run(test_movies)))
+    assert (tuple(run(test_movies))) == ('Medium Cool (1969)',)
+    print("OK")
