@@ -1,7 +1,20 @@
 import csv
 import os
 
-class MemoryScan(object):
+class QueryNode(object):
+    def close(self):
+        print('closing', self)
+        if self.child:
+            self.child.close()
+
+class Root(QueryNode):
+    def next(self):
+        x = self.child.next()
+        if x is None: 
+            self.child.close()
+        return x
+
+class MemoryScan(QueryNode):
     """
     Yield all records from the given "table" in memory.
 
@@ -20,7 +33,7 @@ class MemoryScan(object):
         self.idx += 1
         return x
     
-class FileScan(object):
+class FileScan(QueryNode):
     def __init__(self, path, schema):
         self.path = path
         self.file = None
@@ -37,8 +50,13 @@ class FileScan(object):
         except StopIteration:
             self.file.close()
             return None
+    
+    def close(self):
+        print('closing filescan')
+        if self.file:
+            self.file.close()
 
-class Projection(object):
+class Projection(QueryNode):
     """
     Map the child records using the given map function, e.g. to return a subset
     of the fields.
@@ -53,7 +71,7 @@ class Projection(object):
         return self.proj(x)
 
 
-class Selection(object):
+class Selection(QueryNode):
     """
     Filter the child records using the given predicate function.
 
@@ -71,7 +89,7 @@ class Selection(object):
                 return x
 
 
-class Limit(object):
+class Limit(QueryNode):
     """
     Return only as many as the limit, then stop
     """
@@ -80,12 +98,13 @@ class Limit(object):
 
     def next(self):
         if self.remaining == 0:
+            FileScan()
             return None
         self.remaining -= 1
         return self.child.next()
 
 
-class Sort(object):
+class Sort(QueryNode):
     """
     Sort based on the given key function
     """
@@ -119,7 +138,7 @@ def Q(*nodes):
     starting with a root node, and adding references to each child
     """
     ns = iter(nodes)
-    parent = root = next(ns)
+    parent = root = Root()
     for n in ns:
         parent.child = n
         parent = n
