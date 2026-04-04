@@ -22,12 +22,16 @@ class MemoryScan(object):
     
 class FileScan(object):
     def __init__(self, path, schema):
-        self.file = open(path, 'r')
-        self.reader = csv.reader(self.file)
+        self.path = path
+        self.file = None
+        self.reader = None
         self.schema = schema
-        next(self.reader)
     
     def next(self):
+        if self.file == None or self.file.closed:
+            self.file = open(self.path)
+            self.reader = csv.reader(self.file)
+            next(self.reader)
         try:
             return tuple(t(v) for t, v in zip(self.schema, next(self.reader)))
         except StopIteration:
@@ -135,14 +139,29 @@ def run(q):
 
 if __name__ == '__main__':
     dir = os.path.dirname(__file__)
-    path = os.path.join(dir, 'movies.csv')
+    movie_path = os.path.join(dir, 'movies.csv')
 
-    test_schema = (int, str, str)
+    movies_schema = (int, str, str)
     test_movies = Q(
             # Limit(10),
             Projection(lambda x: (x[1])),
             Selection(lambda x: x[0] == 5000),
-            FileScan(path, test_schema)
+            FileScan(movie_path, movies_schema)
         )
+    
+    print(tuple(run(test_movies)))
     assert (tuple(run(test_movies))) == ('Medium Cool (1969)',)
+    exit()
+
+    rating_path = os.path.join(dir, 'ratings.csv')
+    ratings_schema = (int, int, float, str)
+    test_rating = Q(
+            Limit(10),
+            # Projection(lambda x: (x[1])),
+            # Selection(lambda x: x[0] == 5000),
+            FileScan(rating_path, ratings_schema)
+        )
+    
+    print(tuple(run(test_rating)))
+    
     print("OK")
